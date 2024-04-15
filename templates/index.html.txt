@@ -1,0 +1,44 @@
+<!-- templates/index.html -->
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Photo Tagger</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+<body>
+    <h1>AI Photo Tagger</h1>
+    <input type="file" id="photoInput" accept="image/*">
+    <button onclick="tagPhoto()">Tag Photo</button>
+    <div id="tags"></div>
+
+    <script>
+        function tagPhoto() {
+            var fileInput = document.getElementById('photoInput');
+            var photo = fileInput.files[0];
+
+            var formData = new FormData();
+            formData.append('photo', photo);
+
+            fetch('/api/tag', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                var tagsDiv = document.getElementById('tags');
+                tagsDiv.innerHTML = '';
+
+                data.tags.forEach(tag => {
+                    var tagElement = document.createElement('p');
+                    tagElement.textContent = tag;
+                    tagsDiv.appendChild(tagElement);
+                });
+            })
+            .catch(error => console.error('Error:', error));
+        }
+    </script>
+</body>
+</html>
